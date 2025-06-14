@@ -10,8 +10,9 @@ RUN apt-get update && apt-get install -y \
 # Create a non-root user
 RUN useradd -m -s /bin/bash datagram
 
-# Create application directory
+# Create application directory and datagram directory
 RUN mkdir -p /app && chown datagram:datagram /app
+RUN mkdir -p /home/datagram/.datagram && chown -R datagram:datagram /home/datagram/.datagram
 
 # Switch to non-root user
 USER datagram
