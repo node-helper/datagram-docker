@@ -1,31 +1,22 @@
-# Dockerfile for Datagram CLI with temp directory fix
-FROM ubuntu:22.04
+# Dockerfile
+# Use a minimal base image (e.g., Alpine Linux for small size)
+FROM alpine:latest
 
-# Install wget and other necessary tools
-RUN apt-get update && apt-get install -y \
-    wget \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-# Create application directory and datagram directories
+# Set a working directory inside the container
 WORKDIR /app
-RUN mkdir -p /root/.datagram/tmp \
-    && mkdir -p /root/.datagram/itelligent/binaries \
-    && mkdir -p /root/.datagram/conference/binaries
 
-# Download and install Datagram CLI
-RUN wget https://github.com/Datagram-Group/datagram-cli-release/releases/latest/download/datagram-cli-x86_64-linux -O datagram-cli
+# Download the datagram-cli executable
+# Using ARG for the download URL allows for more flexibility if the URL changes slightly
+ARG DATAGRAM_CLI_URL="https://github.com/Datagram-Group/datagram-cli-release/releases/latest/download/datagram-cli-x86_64-linux"
+RUN wget -O datagram-cli "$DATAGRAM_CLI_URL"
 
-# Make it executable
+# Make the executable runnable
 RUN chmod +x datagram-cli
 
-# Set environment to use datagram temp directory
-ENV TMPDIR=/root/.datagram/tmp
-ENV TMP=/root/.datagram/tmp
-ENV TEMP=/root/.datagram/tmp
-
-# Set the entrypoint
+# Define a default command to run when the container starts
+# This makes it easy to run datagram-cli without specifying the full path every time
 ENTRYPOINT ["./datagram-cli"]
 
-# Default command (can be overridden)
-CMD ["run", "--", "-key", "YOUR_API_KEY"]
+# Optionally, you can set a default argument for the ENTRYPOINT
+# This can be overridden when you run the container
+CMD ["run"]
